@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  webserver:
+    container_name: ${WEBSERVER_NAME}
+    hostname: ${PROJECT_NAME}
+    build:
+      context: ./apache-${PHP_VERSION}
+      args:
+        RUN_ADDITIONAL_CMD: "${DOCKER_RUN_ADDITIONAL_CMD:-echo 'No DOCKER_RUN_ADDITIONAL_CMD specified'}"
+        EXTRA_RUN_CMD_1: "${EXTRA_RUN_CMD_1:-echo 'No EXTRA_RUN_CMD_1 specified'}"
+        EXTRA_RUN_CMD_2: "${EXTRA_RUN_CMD_2:-echo 'No EXTRA_RUN_CMD_2 specified'}"
+        EXTRA_RUN_CMD_3: "${EXTRA_RUN_CMD_3:-echo 'No EXTRA_RUN_CMD_3 specified'}"
+        EXTRA_RUN_CMD_4: "${EXTRA_RUN_CMD_4:-echo 'No EXTRA_RUN_CMD_4 specified'}"
+        EXTRA_RUN_CMD_5: "${EXTRA_RUN_CMD_5:-echo 'No EXTRA_RUN_CMD_5 specified'}"
+        EXTRA_RUN_CMD_6: "${EXTRA_RUN_CMD_6:-echo 'No EXTRA_RUN_CMD_6 specified'}"
+        EXTRA_RUN_CMD_7: "${EXTRA_RUN_CMD_7:-echo 'No EXTRA_RUN_CMD_7 specified'}"
+    volumes:
+      -  ${PROJECT_BASE}:/var/www/html
+      - ./php.ini:/usr/local/etc/php/conf.d/custom.ini:ro
+      - ./000-default.conf:/etc/apache2/sites-available/000-default.conf:ro
+      - /etc/passwd:/etc/passwd:ro
+      - /etc/group:/etc/group:ro
+      - ~/.ssh/known_hosts:/etc/ssh/ssh_known_hosts:ro
+      - ./../utils/:/utils/:ro
+      - /tmp/:/share/
+    env_file:
+      - ${CONFIG_FILE}
+    expose:
+      - "8080"
+      - "8081"
+    environment:
+      - VIRTUAL_HOST=${PROJECT_NAME}.localhost
+      - DEVTOKEN=dev
+      - NETWORK_ACCESS=internal
+      - PHP_IDE_CONFIG=serverName=${PROJECT_NAME}
+      - APACHE_RUN_USER=#${USER}
+      - APACHE_RUN_GROUP=#${GROUP}
+      - CONTAINER_NAME=${WEBSERVER_NAME}
+      - APACHE_LOG_LEVEL=${APACHE_LOG_LEVEL}
+      - HOME=/tmp
+      - XDEBUG_CONFIG="idekey=${PROJECT_NAME}"
+    extra_hosts:
+      - "gateway:${GATEWAY}"
+
+networks:
+  default:
+    name: ${NETWORK_NAME}
+    external: true

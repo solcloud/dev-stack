@@ -1,0 +1,7 @@
+{
+  "name": "solcloud/dev-stack",
+  "bin": [
+    "bin/dev-stack.sh"
+  ],
+  "require": {}
+}
