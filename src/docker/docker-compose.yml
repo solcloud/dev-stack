@@ -8,13 +8,13 @@ services:
       context: ./apache-${PHP_VERSION}
       args:
         RUN_ADDITIONAL_CMD: "${DOCKER_RUN_ADDITIONAL_CMD:-echo 'No DOCKER_RUN_ADDITIONAL_CMD specified'}"
-        EXTRA_RUN_CMD_1: "${EXTRA_RUN_CMD_1:-echo 'No EXTRA_RUN_CMD_1 specified'}"
-        EXTRA_RUN_CMD_2: "${EXTRA_RUN_CMD_2:-echo 'No EXTRA_RUN_CMD_2 specified'}"
-        EXTRA_RUN_CMD_3: "${EXTRA_RUN_CMD_3:-echo 'No EXTRA_RUN_CMD_3 specified'}"
-        EXTRA_RUN_CMD_4: "${EXTRA_RUN_CMD_4:-echo 'No EXTRA_RUN_CMD_4 specified'}"
-        EXTRA_RUN_CMD_5: "${EXTRA_RUN_CMD_5:-echo 'No EXTRA_RUN_CMD_5 specified'}"
-        EXTRA_RUN_CMD_6: "${EXTRA_RUN_CMD_6:-echo 'No EXTRA_RUN_CMD_6 specified'}"
-        EXTRA_RUN_CMD_7: "${EXTRA_RUN_CMD_7:-echo 'No EXTRA_RUN_CMD_7 specified'}"
+        EXTRA_RUN_CMD_1: "${EXTRA_RUN_CMD_1:-echo -n ''}"
+        EXTRA_RUN_CMD_2: "${EXTRA_RUN_CMD_2:-echo -n ''}"
+        EXTRA_RUN_CMD_3: "${EXTRA_RUN_CMD_3:-echo -n ''}"
+        EXTRA_RUN_CMD_4: "${EXTRA_RUN_CMD_4:-echo -n ''}"
+        EXTRA_RUN_CMD_5: "${EXTRA_RUN_CMD_5:-echo -n ''}"
+        EXTRA_RUN_CMD_6: "${EXTRA_RUN_CMD_6:-echo -n ''}"
+        EXTRA_RUN_CMD_7: "${EXTRA_RUN_CMD_7:-echo -n ''}"
     volumes:
       -  ${PROJECT_BASE}:/var/www/html
       - ./php.ini:/usr/local/etc/php/conf.d/custom.ini:ro
