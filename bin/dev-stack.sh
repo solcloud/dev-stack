@@ -94,42 +94,42 @@ volume_path() {
 }
 
 setup_services() {
-  if [[ ${HAS_PROXY:-1} == 1 ]]; then
+  if [[ $HAS_PROXY == 1 ]]; then
     start_service "n_jw_proxy_${NETWORK_NAME}" "-p ${REMOTE_PROXY_PORT}:80 -v /var/run/docker.sock:/tmp/docker.sock:ro -v ${DEV_STACK_BASE}/src/docker/proxy.conf:/etc/nginx/conf.d/my_proxy.conf:ro jwilder/nginx-proxy@sha256:53004448ff1b987e2ae01841365b7f121c75c7928a3c4621cde69ac498badcff"
   fi
 
-  if [[ ${HAS_DB:-1} == 1 ]]; then
+  if [[ $HAS_DB == 1 ]]; then
     DATA=$(volume_path 'mysql')
     start_service "${PREFIX}mysql" "--env MYSQL_USER=dev --env MYSQL_ROOT_PASSWORD=dev -v ${DATA}:/var/lib/mysql ${DB_VERSION:-mariadb:10.2.18}"
 
     start_service "${PREFIX}adminer" "--user www-data:www-data --env VIRTUAL_HOST=adminer.localhost --env ADMINER_DESIGN=nette --env NETWORK_ACCESS=internal --env ADMINER_DEFAULT_SERVER=${PREFIX}mysql adminer@sha256:983035c7ace2a1c300226fb7e901498eb7af0707ee4c8128d12d6460b07995c9" # 4.7.7-standalone
   fi
 
-  if [[ ${HAS_RABBIT:-1} == 1 ]]; then
+  if [[ $HAS_RABBIT == 1 ]]; then
     DATA=$(volume_path 'rabbitmq')
     start_service "${PREFIX}rabbitmq" "--hostname rabbitmq --env VIRTUAL_HOST=rabbitmq.localhost --env VIRTUAL_PORT=15672 --env RABBITMQ_DEFAULT_USER=dev --env RABBITMQ_DEFAULT_PASS=dev --env NETWORK_ACCESS=internal --env RABBITMQ_NODENAME=bunny1@rabbitmq -v ${DATA}:/var/lib/rabbitmq ${RABBITMQ_VERSION:-rabbitmq:3.6.12-management-alpine}"
   fi
 
-  if [[ ${HAS_REDIS:-1} == 1 ]]; then
+  if [[ $HAS_REDIS == 1 ]]; then
     DATA=$(volume_path 'redis')
     start_service "${PREFIX}redis" "-v ${DATA}:/data ${REDIS_VERSION:-redis:3.2.12-alpine}"
   fi
 }
 
 create_volumes() {
-  if [[ ${HAS_DB:-1} == 1 ]]; then
+  if [[ $HAS_DB == 1 ]]; then
     if [[ ! $(docker volume ls | grep "v_${PREFIX}mysql") ]]; then
        docker volume create --name="v_${PREFIX}mysql"
     fi
   fi
 
-  if [[ ${HAS_REDIS:-1} == 1 ]]; then
+  if [[ $HAS_REDIS == 1 ]]; then
     if [[ ! $(docker volume ls | grep "v_${PREFIX}redis") ]]; then
       docker volume create --name="v_${PREFIX}redis"
     fi
   fi
 
-  if [[ ${HAS_RABBIT:-1} == 1 ]]; then
+  if [[ $HAS_RABBIT == 1 ]]; then
     if [[ ! $(docker volume ls | grep "v_${PREFIX}rabbitmq") ]]; then
       docker volume create --name="v_${PREFIX}rabbitmq"
     fi
@@ -148,14 +148,14 @@ list_services() {
   echo ""
   echo "Webserver at http://${PROJECT_NAME}.localhost:${PROXY_PORT} (http://$(service_ip ${WEBSERVER_NAME}))"
   echo ""
-  if [[ ${HAS_DB:-1} == 1 ]]; then
+  if [[ $HAS_DB == 1 ]]; then
     echo "Adminer: http://adminer.localhost:${PROXY_PORT} (http://$(service_ip ${PREFIX}adminer):8080)"
     echo "Mysql: $(service_ip ${PREFIX}mysql):3306"
   fi
-  if [[ ${HAS_RABBIT:-1} == 1 ]]; then
+  if [[ $HAS_RABBIT == 1 ]]; then
     echo "Rabbitmq management: http://rabbitmq.localhost:${PROXY_PORT} (http://$(service_ip ${PREFIX}rabbitmq):15672)"
   fi
-  if [[ ${HAS_REDIS:-1} == 1 ]]; then
+  if [[ $HAS_REDIS == 1 ]]; then
     echo "Redis: $(service_ip ${PREFIX}redis):6378"
   fi
   echo ""
@@ -175,6 +175,20 @@ export APACHE_LOG_DIR=${APACHE_LOG_DIR:-'/var/log/apache2'}
 export APACHE_LOG_LEVEL=${APACHE_LOG_LEVEL:-'warn'}
 export GATEWAY=$(docker network inspect $NETWORK_NAME | grep 'Gateway' | grep -ohE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')
 source <(sed 's/^/export /' $CONFIG_FILE)
+
+# Prefix's defaults services
+if [[ $PREFIX == 'solcloud_' ]]; then
+  [ -z $HAS_PROXY ] && HAS_PROXY=1
+  [ -z $HAS_DB ] && HAS_DB=1
+  [ -z $HAS_RABBIT ] && HAS_RABBIT=1
+  [ -z $HAS_REDIS ] && HAS_REDIS=1
+else
+  [ -z $HAS_PROXY ] && HAS_PROXY=0
+  [ -z $HAS_DB ] && HAS_DB=0
+  [ -z $HAS_RABBIT ] && HAS_RABBIT=0
+  [ -z $HAS_REDIS ] && HAS_REDIS=0
+fi
+export DOCUMENT_ROOT=''
 
 compose_up() {
   create_volumes
