@@ -177,6 +177,8 @@ export GATEWAY=$(docker network inspect $NETWORK_NAME | grep 'Gateway' | grep -o
 source <(sed 's/^/export /' $CONFIG_FILE)
 
 # Prefix's defaults services
+[ -z $DOCUMENT_ROOT ] && export DOCUMENT_ROOT=''
+[ -z $PHP_VERSION ] && export PHP_VERSION=7.4
 if [[ $PREFIX == 'solcloud_' ]]; then
   [ -z $HAS_PROXY ] && HAS_PROXY=1
   [ -z $HAS_DB ] && HAS_DB=1
@@ -188,7 +190,6 @@ else
   [ -z $HAS_RABBIT ] && HAS_RABBIT=0
   [ -z $HAS_REDIS ] && HAS_REDIS=0
 fi
-export DOCUMENT_ROOT=''
 
 compose_up() {
   create_volumes
