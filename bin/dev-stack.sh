@@ -218,6 +218,12 @@ if [ "$1" ] && [ "$1" == "down" ]; then
   compose_down
   exit 0
 fi
+if [ "$1" ] && [ "$1" == "xdebug" ]; then
+  echo "(Re)starting containers with xdebug enabled"
+  XDEBUG_MODE=debug
+  compose_up > /dev/null
+  exit 0
+fi
 if [ "$1" ] && [ "$1" == "up" ]; then
   if [ "$2" ] && [ "$2" == "-v" ]; then
     compose_up

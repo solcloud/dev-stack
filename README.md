@@ -22,3 +22,5 @@ Start containers by running `dev up -v` in project working directory. If project
 - PHPUnit: `dev unit`
 - php cli: `dev php`
 - worker start (run.php): `dev worker`
+- Xdebug default enable: `dev xdebug`
+- Xdebug cli one shot: `dev debug script.php`
