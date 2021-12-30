@@ -273,6 +273,10 @@ if [ "$1" ] && [ "$1" == "php" ]; then
   $DOCKER_EXEC "${WEBSERVER_NAME}" bash -c "umask 007 ; php ${ARGS[*]}"
   exit 0
 fi
+if [ "$1" ] && [ "$1" == "debug" ]; then
+  $DOCKER_EXEC "${WEBSERVER_NAME}" bash -c "umask 007 ; export XDEBUG_MODE=debug ; php ${ARGS[*]}"
+  exit 0
+fi
 if [ "$1" ] && [ "$1" == "worker" ]; then
   $DOCKER_EXEC "${WEBSERVER_NAME}" bash -c "umask 007 ; php ${ARGS[*]:-run.php}"
   exit 0
