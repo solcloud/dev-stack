@@ -196,6 +196,7 @@ compose_up() {
   setup_network
   setup_services
 
+  export XDEBUG_MODE=${XDEBUG_MODE:-'off'}
   $COMPOSE up -d --force-recreate --build
   [[ -n "${ROOT_SETUP}" ]] && docker exec --detach "$WEBSERVER_NAME" bash -c "$ROOT_SETUP" || true
 }
