@@ -17,3 +17,5 @@ ARG EXTRA_RUN_CMD_6
 RUN bash -c "$EXTRA_RUN_CMD_6"
 ARG EXTRA_RUN_CMD_7
 RUN bash -c "$EXTRA_RUN_CMD_7"
+
+COPY custom2.ini /usr/local/etc/php/conf.d/custom2.ini
