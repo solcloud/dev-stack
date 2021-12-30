@@ -111,8 +111,8 @@ fi
   singleton_bg "ssh -q -N -L 127.0.0.1:$LOCAL_PROXY_PORT:127.0.0.1:$REMOTE_PROXY_PORT -p $REMOTE_PORT $REMOTE_USER@$REMOTE_IP"
 
   # Ports forwarding from remote (NEEDS sshd_config: GatewayPorts clientspecified or yes)
-  singleton_bg "ssh -q -N -R $REMOTE_IP_REAL:9000:127.0.0.1:9000 -p $REMOTE_PORT $REMOTE_USER@$REMOTE_IP > /dev/null 2>& 1" # xdebug 2 9000 port forward
-  #singleton_bg "ssh -q -N -R $REMOTE_IP_REAL:9003:$127.0.0.1:9003 -p $REMOTE_PORT $REMOTE_USER@$REMOTE_IP > /dev/null 2>& 1" # xdebug 3 9003 port forward
+  #singleton_bg "ssh -q -N -R $REMOTE_IP_REAL:9000:127.0.0.1:9000 -p $REMOTE_PORT $REMOTE_USER@$REMOTE_IP > /dev/null 2>& 1" # xdebug 2 9000 port forward
+  singleton_bg "ssh -q -N -R $REMOTE_IP_REAL:9003:127.0.0.1:9003 -p $REMOTE_PORT $REMOTE_USER@$REMOTE_IP > /dev/null 2>& 1" # xdebug 3 9003 port forward
 }
 
 # Params

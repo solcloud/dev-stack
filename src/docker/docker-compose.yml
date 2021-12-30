@@ -41,6 +41,7 @@ services:
       - APACHE_LOG_LEVEL=${APACHE_LOG_LEVEL}
       - HOME=/tmp
       - XDEBUG_CONFIG="idekey=${PROJECT_NAME}"
+      - XDEBUG_SESSION="${PROJECT_NAME}"
     extra_hosts:
       - "gateway:${GATEWAY}"
 
