@@ -173,7 +173,6 @@ export USER=$(id -u)
 export GROUP=$(id -g)
 export APACHE_LOG_DIR=${APACHE_LOG_DIR:-'/var/log/apache2'}
 export APACHE_LOG_LEVEL=${APACHE_LOG_LEVEL:-'warn'}
-export GATEWAY=$(docker network inspect $NETWORK_NAME | grep 'Gateway' | grep -ohE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')
 source <(sed 's/^/export /' $CONFIG_FILE)
 
 # Prefix's defaults services
@@ -197,6 +196,7 @@ compose_up() {
   setup_services
 
   export XDEBUG_MODE=${XDEBUG_MODE:-'off'}
+  export GATEWAY=$(docker network inspect $NETWORK_NAME | grep 'Gateway' | grep -ohE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')
   $COMPOSE up -d --force-recreate --build
   [[ -n "${ROOT_SETUP}" ]] && docker exec --detach "$WEBSERVER_NAME" bash -c "$ROOT_SETUP" || true
 }
