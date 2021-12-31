@@ -70,7 +70,7 @@ if [ "$1" ] && [ "$1" == "machine" ]; then
       fi
       QEMU_OPTS="-nographic"
       if [ $STORAGE_DIRVER == "virtiofs" ]; then
-        virtiofsd-rs --socket /tmp/dev-stack-qemu-virtiofs --shared-dir $CODE_SRC_ROOT_DIR --disable-xattr --sandbox none --no-announce-submounts &
+        virtiofsd --socket /tmp/dev-stack-qemu-virtiofs --shared-dir $CODE_SRC_ROOT_DIR --disable-xattr --sandbox none --no-announce-submounts &
         QEMU_OPTS="$QEMU_OPTS -chardev socket,id=char0,path=/tmp/dev-stack-qemu-virtiofs -device vhost-user-fs-pci,queue-size=1024,chardev=char0,tag=tag -object memory-backend-file,id=mem,size=${QEMU_RAM:-4G},mem-path=/dev/shm,share=on -numa node,memdev=mem"
       fi
       qemu-system-x86_64 -cpu host -smp ${QEMU_NPROC:-1} -m ${QEMU_RAM:-4G} -enable-kvm -device ahci,id=ahci -usb -device usb-tablet \
