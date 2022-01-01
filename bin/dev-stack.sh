@@ -142,18 +142,21 @@ delete_volumes() {
   docker volume rm v_${PREFIX}rabbitmq
 }
 
+list_proxy() {
+  [ $HAS_PROXY == 1 ] && echo -n " $1"
+}
 
 list_services() {
   echo "################################################################################"
   echo ""
-  echo "Webserver at http://${PROJECT_NAME}.localhost:${PROXY_PORT} (http://$(service_ip ${WEBSERVER_NAME}))"
+  echo "Webserver:$(list_proxy http://${PROJECT_NAME}.localhost:${PROXY_PORT}) http://$(service_ip ${WEBSERVER_NAME})"
   echo ""
   if [[ $HAS_DB == 1 ]]; then
-    echo "Adminer: http://adminer.localhost:${PROXY_PORT} (http://$(service_ip ${PREFIX}adminer):8080)"
+    echo "Adminer:$(list_proxy http://adminer.localhost:${PROXY_PORT}) http://$(service_ip ${PREFIX}adminer):8080"
     echo "Mysql: $(service_ip ${PREFIX}mysql):3306"
   fi
   if [[ $HAS_RABBIT == 1 ]]; then
-    echo "Rabbitmq management: http://rabbitmq.localhost:${PROXY_PORT} (http://$(service_ip ${PREFIX}rabbitmq):15672)"
+    echo "Rabbitmq management:$(list_proxy http://rabbitmq.localhost:${PROXY_PORT}) http://$(service_ip ${PREFIX}rabbitmq):15672"
   fi
   if [[ $HAS_REDIS == 1 ]]; then
     echo "Redis: $(service_ip ${PREFIX}redis):6378"
