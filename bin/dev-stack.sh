@@ -202,6 +202,8 @@ compose_up() {
 }
 
 compose_down() {
+  export XDEBUG_MODE=''
+  export GATEWAY=''
   $COMPOSE down
 }
 
