@@ -238,14 +238,6 @@ if [ "$1" ] && [ "$1" == "up" ]; then
   list_services
   exit 0
 fi
-if [ "$1" ] && [ "$1" == "www" ]; then
-  xdg-open "http://$(service_ip ${WEBSERVER_NAME})"
-  exit 0
-fi
-if [ "$1" ] && [ "$1" == "adminer" ]; then
-  xdg-open "http://$(service_ip ${PREFIX}adminer):8080"
-  exit 0
-fi
 if [ "$1" ] && [ "$1" == "status" ]; then
   if [[ $(docker ps -f name="${WEBSERVER_NAME}" | grep -w "${WEBSERVER_NAME}") ]]; then
      list_services
