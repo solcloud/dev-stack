@@ -372,42 +372,73 @@ fi
 
 usage() {
   cat >&2 << USAGE_HELP
-  $0 [up|down|status|composer|stan|md|unit|ws|exec|php|node] [options]
+$0 COMMAND [options]
 
-    up          Nastartování kontejnerů
+  cmd [PARAMS = bash]- run PARAMS inside webserver container
 
-    down        Ukončení kontejnerů
+  compose - run docker compose
 
-    status      Vypíše info o běžících kontejnerech
+  composer - run php composer inside webserver container
+             update
+             install
+             -o --no-dev
 
-    composer    Spuštění composeru v kontejneru
-      update
-      install
-      -o --no-dev
+  composerssh - run php composer with ssh-agent, for cloning private repositories
 
-    stan         PHPStan
-      analyse
-      --level max
+  debug [PHP_OPTION] - enable xdebug's debug mode on single php binary execution, mostly for single shot xdebugging php program 'dev debug file.php'
 
-    md [sources] [ansi|html|text|xml|json]  ruleset       PHP Mess Detector
-      Available rulesets: cleancode,codesize,controversial,design,naming,unusedcode.
-      md src/,tests/ ansi cleancode,codesize,controversial,design,naming,unusedcode
+  down - stop project container(s)
 
+  exec - list containers with same prefix
 
-    unit         PHPUnit
+  exec [CONTAINER_NAME] [COMMAND = bash] - exec into container CONTAINER_NAME using COMMAND, without CONTAINER_NAME list current prefix containers
 
-    ws           Exec do webserverového kontejneru
+  greenmail - run localhost greenmail instance for email testing
 
-    exec         Vypíše kontejnery v aktuálním namespacu (prefixu)
-    exec [container_name] [command:sh]   Exec do daného [container_name]
+  init - copy template .dev-config file to project root
 
-    php [options]     Php cli v kontejneru webserveru
-      php -a
-      php file.php
+  logs - docker logs
 
-    node        NodeJS cli
-      npm
-      npx
+  md - run PHP Mess Detector, static analysis tool for php
+       md [sources] [ansi|html|text|xml|json]  ruleset       PHP Mess Detector
+       md src/,tests/ ansi cleancode,codesize,controversial,design,naming,unusedcode
+
+  node - run NODE_VERSION node command
+         npm
+         npx
+
+  php - run php command inside webserver container
+        -a
+        -r
+        -v
+        --ini
+        file.php
+
+  rebuild - remove volumes and rebuild whole PREFIX images, danger action use with care
+
+  root [CONTAINER_NAME = webserver] [COMMAND = bash] - exec into container (by default webserver) as user 0:0 spawning COMMAND (by default bash)
+
+  stan - run PHPStan, static analysis tool for php
+         analyse --level max
+
+  start - run docker compose start
+
+  status - print info about containers
+
+  stop - run docker compose stop
+
+  unit - run PHPUnit, testing framework for php
+
+  up - start project container(s)
+
+  volume delete - delete current PREFIX volumes, danger use with care
+
+  worker - run php binary inside webserver container with path run.php
+
+  ws [COMMAND = bash] - exec inside webserver container spawning COMMAND (default bash)
+
+  xdebug - (re)start container(s) with xdebug's debug mode enabled on webserver (slower response)
+
 
 USAGE_HELP
   exit 1
