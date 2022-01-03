@@ -1,10 +1,10 @@
 # Dev stack
 
-`Bash` script for ease development built on top of `docker` and `docker-compose`.
+`Bash` script for ease development built on top of `docker` and `docker-compose`. You can watch showcase video on [youtube](https://youtu.be/YxJQqU3mXUM).
 
 # Install
 
-Add `bin/dev-stack.sh` to your `$PATH`, ideally as `dev` shortcut, something like `ln -s /path/to/solcloud/dev-stack/bin/dev-stack.sh /bin/dev`
+Add `bin/dev-stack.sh` to your `$PATH`, ideally as `dev` shortcut, something like `ln -s /path/to/solcloud/dev-stack/bin/dev-stack.sh /bin/dev`.
 
 # Activation
 
