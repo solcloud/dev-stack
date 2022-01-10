@@ -52,7 +52,7 @@ REMOTE_PROXY_PORT=${REMOTE_PROXY_PORT:-$PROXY_PORT}
 NETWORK_NAME="n_${PREFIX}net"
 COMPOSE_FILE=${COMPOSE_FILE:-"${DEV_STACK_BASE}/src/docker/docker-compose.yml"}
 WEBSERVER_NAME="${PROJECT_NAME}-webserver"
-NODE_VERSION=${NODE_VERSION:-"node@sha256:b4cca2f95c701d632ffd39258f9ec9ee9fb13c8cc207f1da02eb990c98395ac1"} # 14.17.0-alpine
+NODE_VERSION=${NODE_VERSION:-"node:current-alpine"}
 
 if [ -z "$PROJECT_NAME" ]; then
     echo "Project name cannot be empty"
@@ -328,7 +328,7 @@ if [ "$1" ] && [ "$1" == "unit" ]; then
   exit 0
 fi
 if [ "$1" ] && [ "$1" == "node" ]; then
-    docker run -it --user $USER:$GROUP -v ${PROJECT_BASE}:/dir $NODE_VERSION "${ARGS[@]:-sh}"
+    docker run -it --user $USER:$GROUP -v ${PROJECT_BASE}:/dir -w /dir --env HOME=/tmp $NODE_VERSION "${ARGS[@]:-sh}"
     exit 0
 fi
 if [ "$1" ] && [ "$1" == "greenmail" ]; then
