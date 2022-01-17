@@ -141,6 +141,8 @@ elif [ "$1" ] && [ "$1" == "greenmail" ]; then
       ssh -N -L 127.0.0.1:${port}:127.0.0.1:${port} -p $REMOTE_PORT $REMOTE_USER@$REMOTE_IP &
     done;
     remote_dev_stack "$*"
+elif [ "$1" ] && [ "$1" == "x11" ]; then
+    ssh -t -X -p $REMOTE_PORT $REMOTE_USER@$REMOTE_IP 'DISPLAY_NUMBER=$(echo $DISPLAY | cut -d. -f1 | cut -d: -f2) && export DISPLAY=:$(echo $DISPLAY | cut -d. -f1 | cut -d: -f2) && mkdir -p /tmp/.X11-unix/ && echo "Forwarding x11 session, slot: $DISPLAY_NUMBER, path: /tmp/.X11-unix/X${DISPLAY_NUMBER}, use DISPLAY=$DISPLAY at target" && socat $(echo "UNIX-LISTEN:/tmp/.X11-unix/X${DISPLAY_NUMBER},fork TCP4:localhost:60${DISPLAY_NUMBER}")'
 else
     # Run remote dev-stack
     remote_dev_stack "$*"
