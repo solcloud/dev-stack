@@ -142,6 +142,10 @@ elif [ "$1" ] && [ "$1" == "greenmail" ]; then
     done;
     remote_dev_stack "$*"
 elif [ "$1" ] && [ "$1" == "x11" ]; then
+    echo 'Need to match remote hostname and few mounts and environment variables, eg:'
+    echo 'Hostname: dev'
+    echo 'Mounts: /tmp/.X11-unix/:/tmp/.X11-unix/:ro and /home/code/.Xauthority:/tmp/.Xauthority:ro'
+    echo 'Env: DISPLAY=:10 and XAUTHORITY=/tmp/.Xauthority'
     ssh -t -X -p $REMOTE_PORT $REMOTE_USER@$REMOTE_IP 'DISPLAY_NUMBER=$(echo $DISPLAY | cut -d. -f1 | cut -d: -f2) && export DISPLAY=:$(echo $DISPLAY | cut -d. -f1 | cut -d: -f2) && mkdir -p /tmp/.X11-unix/ && echo "Forwarding x11 session, slot: $DISPLAY_NUMBER, path: /tmp/.X11-unix/X${DISPLAY_NUMBER}, use DISPLAY=$DISPLAY at target" && socat $(echo "UNIX-LISTEN:/tmp/.X11-unix/X${DISPLAY_NUMBER},fork TCP4:localhost:60${DISPLAY_NUMBER}")'
 else
     # Run remote dev-stack
