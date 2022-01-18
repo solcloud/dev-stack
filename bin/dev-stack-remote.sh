@@ -94,7 +94,17 @@ elif [ "$1" ] && [ "$1" == "forward" ]; then
       echo "Forwarding local port $2 to remote IP $3:$4"
       ssh -N -L 127.0.0.1:$2:$3:$4 -p $REMOTE_PORT $REMOTE_USER@$REMOTE_IP
   else
-      echo "Usage: forward LOCAL_PORT REMOTE_IP REMOTE_PORT"
+      echo "Usage: $1 LOCAL_PORT REMOTE_IP REMOTE_PORT"
+  fi
+  exit 0
+elif [ "$1" ] && [ "$1" == "publish" ]; then
+  if [ "$2" ]; then
+      remotePort=${3:-80}
+      localPort=${4:-8080}
+      echo "Forwarding 0.0.0.0:$localPort to remote $2:$remotePort"
+      ssh -N -L 0.0.0.0:$localPort:$2:$remotePort -p $REMOTE_PORT $REMOTE_USER@$REMOTE_IP
+  else
+      echo "Usage: $1 REMOTE_IP [REMOTE_PORT=80] [LOCAL_PORT=8080]"
   fi
   exit 0
 elif [ "$1" ] && [ "$1" == "x11" ]; then
