@@ -114,6 +114,10 @@ setup_services() {
     DATA=$(volume_path 'redis')
     start_service "${PREFIX}redis" "-v ${DATA}:/data ${REDIS_VERSION:-redis:3.2.12-alpine}"
   fi
+
+  if [[ $HAS_MINIO == 1 ]]; then
+    start_service "${PREFIX}minio" "--env MINIO_ROOT_USER=dev --env MINIO_ROOT_PASSWORD=devdevdev --env NETWORK_ACCESS=internal --env VIRTUAL_HOST=minio.localhost -p 9001:9001 --env VIRTUAL_PORT=9001 ${MINIO_VERSION:-minio/minio} server /data --console-address 0.0.0.0:9001"
+  fi
 }
 
 create_volumes() {
@@ -161,6 +165,10 @@ list_services() {
   if [[ $HAS_REDIS == 1 ]]; then
     echo "Redis: $(service_ip ${PREFIX}redis):6378"
   fi
+  if [[ $HAS_MINIO == 1 ]]; then
+    echo "Minio management:$(list_proxy http://minio.localhost:${PROXY_PORT}) http://$(service_ip ${PREFIX}minio):9001"
+    echo "Minio default user 'dev' pass 'devdevdev', S3 api http://$(service_ip ${PREFIX}minio):9000"
+  fi
   echo ""
   echo "################################################################################"
 }
@@ -186,11 +194,13 @@ if [[ $PREFIX == 'solcloud_' ]]; then
   [ -z $HAS_DB ] && HAS_DB=1
   [ -z $HAS_RABBIT ] && HAS_RABBIT=1
   [ -z $HAS_REDIS ] && HAS_REDIS=1
+  [ -z $HAS_MINIO ] && HAS_MINIO=0
 else
   [ -z $HAS_PROXY ] && HAS_PROXY=0
   [ -z $HAS_DB ] && HAS_DB=0
   [ -z $HAS_RABBIT ] && HAS_RABBIT=0
   [ -z $HAS_REDIS ] && HAS_REDIS=0
+  [ -z $HAS_MINIO ] && HAS_MINIO=0
 fi
 
 compose_up() {
