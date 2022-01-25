@@ -5,9 +5,10 @@ services:
     container_name: ${WEBSERVER_NAME}
     hostname: ${PROJECT_NAME}
     build:
-      context: ./apache-${PHP_VERSION}
+      context: ${COMPOSE_CONTEXT}
       args:
-        RUN_ADDITIONAL_CMD: "${DOCKER_RUN_ADDITIONAL_CMD:-echo 'No DOCKER_RUN_ADDITIONAL_CMD specified'}"
+        BASE_IMAGE: "$BASE_IMAGE"
+        RUN_ADDITIONAL_CMD: "${DOCKER_RUN_ADDITIONAL_CMD:-echo -n ''}"
         EXTRA_RUN_CMD_1: "${EXTRA_RUN_CMD_1:-echo -n ''}"
         EXTRA_RUN_CMD_2: "${EXTRA_RUN_CMD_2:-echo -n ''}"
         EXTRA_RUN_CMD_3: "${EXTRA_RUN_CMD_3:-echo -n ''}"

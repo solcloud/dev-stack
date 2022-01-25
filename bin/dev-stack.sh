@@ -203,6 +203,9 @@ else
   [ -z $HAS_MINIO ] && HAS_MINIO=0
 fi
 
+export COMPOSE_CONTEXT=${COMPOSE_CONTEXT:-'.'}
+export BASE_IMAGE=${BASE_IMAGE:-"solcloud/php:${PHP_VERSION}"}
+
 compose_up() {
   create_volumes
   setup_network
