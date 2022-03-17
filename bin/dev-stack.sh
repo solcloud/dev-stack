@@ -361,7 +361,7 @@ if [ "$1" ] && [ "$1" == "cmd" ]; then
     exit 0
 fi
 if [ "$1" ] && [ "$1" == "ws" ]; then
-  $DOCKER_EXEC "${WEBSERVER_NAME}" ${2:-sh}
+  $DOCKER_EXEC "${WEBSERVER_NAME}" ${2:-bash}
   exit 0
 fi
 if [ "$1" ] && [ "$1" == "root" ]; then
