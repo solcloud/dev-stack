@@ -214,7 +214,7 @@ compose_up() {
   export XDEBUG_MODE=${XDEBUG_MODE:-'off'}
   export GATEWAY=$(docker network inspect $NETWORK_NAME | grep 'Gateway' | grep -ohE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}')
   $COMPOSE up -d --force-recreate --build
-  [[ -n "${ROOT_SETUP}" ]] && docker exec --detach "$WEBSERVER_NAME" bash -c "$ROOT_SETUP" || true
+  [[ -n "${ROOT_SETUP}" ]] && docker exec --detach "$WEBSERVER_NAME" sh -c "$ROOT_SETUP" || true
 }
 
 compose_down() {
@@ -280,22 +280,22 @@ if [ "$1" ] && [ "$1" == "volume" ]; then
 fi
 if [ "$1" ] && [ "$1" == "exec" ]; then
   if [ "$2" ]; then
-    $DOCKER_EXEC $2 ${3:-'bash'}
+    $DOCKER_EXEC $2 ${3:-'sh'}
   else
     docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
   fi
   exit 0
 fi
 if [ "$1" ] && [ "$1" == "php" ]; then
-  $DOCKER_EXEC "${WEBSERVER_NAME}" bash -c "umask 007 ; php ${ARGS[*]}"
+  $DOCKER_EXEC "${WEBSERVER_NAME}" sh -c "umask 007 ; php ${ARGS[*]}"
   exit 0
 fi
 if [ "$1" ] && [ "$1" == "debug" ]; then
-  $DOCKER_EXEC "${WEBSERVER_NAME}" bash -c "umask 007 ; export XDEBUG_MODE=debug ; php ${ARGS[*]}"
+  $DOCKER_EXEC "${WEBSERVER_NAME}" sh -c "umask 007 ; export XDEBUG_MODE=debug ; php ${ARGS[*]}"
   exit 0
 fi
 if [ "$1" ] && [ "$1" == "worker" ]; then
-  $DOCKER_EXEC "${WEBSERVER_NAME}" bash -c "umask 007 ; php ${ARGS[*]:-run.php}"
+  $DOCKER_EXEC "${WEBSERVER_NAME}" sh -c "umask 007 ; php ${ARGS[*]:-run.php}"
   exit 0
 fi
 if [ "$1" ] && [ "$1" == "compose" ]; then
@@ -304,7 +304,7 @@ if [ "$1" ] && [ "$1" == "compose" ]; then
   exit 0
 fi
 if [ "$1" ] && [ "$1" == "composer" ]; then
-  $DOCKER_EXEC "${WEBSERVER_NAME}" bash -c "mkdir -p /tmp/.composer/ ; php /utils/composer2.phar config --global process-timeout 6000 ; umask 007 ; php /utils/composer2.phar ${ARGS[*]}"
+  $DOCKER_EXEC "${WEBSERVER_NAME}" sh -c "mkdir -p /tmp/.composer/ ; php /utils/composer2.phar config --global process-timeout 6000 ; umask 007 ; php /utils/composer2.phar ${ARGS[*]}"
   exit 0
 fi
 if [ "$1" ] && [ "$1" == "composerssh" ]; then
@@ -322,22 +322,22 @@ if [ "$1" ] && [ "$1" == "composerssh" ]; then
   auth_json=${AUTH_JSON:-~/.composer/auth.json}
   test -r $auth_json && cp $auth_json /tmp/dev-stack-auth.json
 
-  $DOCKER_EXEC "${WEBSERVER_NAME}" bash -c "mkdir -p /tmp/.composer/ ; php /utils/composer2.phar config --global process-timeout 6000 ; ln -sf /share/dev-stack-auth.json /tmp/.composer/auth.json ; export SSH_AUTH_SOCK=$SSH_AUTH_SOCK_PATH ; umask 007 ; php /utils/composer2.phar ${ARGS[*]}"
+  $DOCKER_EXEC "${WEBSERVER_NAME}" sh -c "mkdir -p /tmp/.composer/ ; php /utils/composer2.phar config --global process-timeout 6000 ; ln -sf /share/dev-stack-auth.json /tmp/.composer/auth.json ; export SSH_AUTH_SOCK=$SSH_AUTH_SOCK_PATH ; umask 007 ; php /utils/composer2.phar ${ARGS[*]}"
 
   rm -f /tmp/dev-stack-auth.json
   [ "$SSH_AGENT_PID" ] && eval $(ssh-agent -k)
   exit 0
 fi
 if [ "$1" ] && [ "$1" == "stan" ]; then
-  $DOCKER_EXEC "${WEBSERVER_NAME}" bash -c "umask 007 ; php /utils/phpstan.phar --memory-limit=256M ${ARGS[*]}"
+  $DOCKER_EXEC "${WEBSERVER_NAME}" sh -c "umask 007 ; php /utils/phpstan.phar --memory-limit=256M ${ARGS[*]}"
   exit 0
 fi
 if [ "$1" ] && [ "$1" == "md" ]; then
-  $DOCKER_EXEC "${WEBSERVER_NAME}" bash -c "umask 007 ; php /utils/phpmd.phar ${ARGS[*]}"
+  $DOCKER_EXEC "${WEBSERVER_NAME}" sh -c "umask 007 ; php /utils/phpmd.phar ${ARGS[*]}"
   exit 0
 fi
 if [ "$1" ] && [ "$1" == "unit" ]; then
-  $DOCKER_EXEC "${WEBSERVER_NAME}" bash -c "umask 007 ; php /utils/phpunit.phar ${ARGS[*]}"
+  $DOCKER_EXEC "${WEBSERVER_NAME}" sh -c "umask 007 ; php /utils/phpunit.phar ${ARGS[*]}"
   exit 0
 fi
 if [ "$1" ] && [ "$1" == "node" ]; then
@@ -357,15 +357,15 @@ if [ "$1" ] && [ "$1" == "logs" ]; then
     exit 0
 fi
 if [ "$1" ] && [ "$1" == "cmd" ]; then
-    $DOCKER_EXEC "${WEBSERVER_NAME}" "${ARGS[@]:-bash}"
+    $DOCKER_EXEC "${WEBSERVER_NAME}" "${ARGS[@]:-sh}"
     exit 0
 fi
 if [ "$1" ] && [ "$1" == "ws" ]; then
-  $DOCKER_EXEC "${WEBSERVER_NAME}" ${2:-bash}
+  $DOCKER_EXEC "${WEBSERVER_NAME}" ${2:-sh}
   exit 0
 fi
 if [ "$1" ] && [ "$1" == "root" ]; then
-  docker exec -it --user 0:0 "${2:-$WEBSERVER_NAME}" ${2:-bash}
+  docker exec -it --user 0:0 "${2:-$WEBSERVER_NAME}" ${2:-sh}
   exit 0
 fi
 if [ "$1" ] && [ "$1" == "rebuild" ]; then
@@ -387,7 +387,7 @@ usage() {
   cat >&2 << USAGE_HELP
 $0 COMMAND [options]
 
-  cmd [PARAMS = bash]- run PARAMS inside webserver container
+  cmd [PARAMS = sh]- run PARAMS inside webserver container
 
   compose - run docker compose
 
@@ -404,7 +404,7 @@ $0 COMMAND [options]
 
   exec - list containers with same prefix
 
-  exec [CONTAINER_NAME] [COMMAND = bash] - exec into container CONTAINER_NAME using COMMAND, without CONTAINER_NAME list current prefix containers
+  exec [CONTAINER_NAME] [COMMAND = sh] - exec into container CONTAINER_NAME using COMMAND, without CONTAINER_NAME list current prefix containers
 
   greenmail - run localhost greenmail instance for email testing
 
@@ -429,7 +429,7 @@ $0 COMMAND [options]
 
   rebuild - remove volumes and rebuild whole PREFIX images, danger action use with care
 
-  root [CONTAINER_NAME = webserver] [COMMAND = bash] - exec into container (by default webserver) as user 0:0 spawning COMMAND (by default bash)
+  root [CONTAINER_NAME = webserver] [COMMAND = sh] - exec into container (by default webserver) as user 0:0 spawning COMMAND (by default sh)
 
   stan - run PHPStan, static analysis tool for php
          analyse --level max
@@ -448,7 +448,7 @@ $0 COMMAND [options]
 
   worker - run php binary inside webserver container with path run.php
 
-  ws [COMMAND = bash] - exec inside webserver container spawning COMMAND (default bash)
+  ws [COMMAND = sh] - exec inside webserver container spawning COMMAND (default sh)
 
   xdebug - (re)start container(s) with xdebug's debug mode enabled on webserver (slower response)
 
