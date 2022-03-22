@@ -154,6 +154,8 @@ elif [ "$1" ] && [ "$1" == "composerssh" ]; then
     ssh-add -t 300 ${PRIVATE_KEY:-~/.ssh/id_rsa}
     ssh -A -p $REMOTE_PORT $REMOTE_USER@$REMOTE_IP "cd $PROJECT_BASE && export SSH_AUTH_SOCK_PATH=\$(echo \$SSH_AUTH_SOCK | sed s@/tmp/@/share/@) ; $REMOTE_DEV_STACK_BIN $*"
     eval $(ssh-agent -k)
+elif [ "$1" ] && [ "$1" == "br" ]; then
+    ${BROWSER:-'ff'} "$(remote_dev_stack 'www')"
 elif [ "$1" ] && [ "$1" == "greenmail" ]; then
     for port in 3025 3110; do
       ssh -N -L 127.0.0.1:${port}:127.0.0.1:${port} -p $REMOTE_PORT $REMOTE_USER@$REMOTE_IP &
