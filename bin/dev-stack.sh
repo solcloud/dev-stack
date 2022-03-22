@@ -251,6 +251,14 @@ if [ "$1" ] && [ "$1" == "up" ]; then
   list_services
   exit 0
 fi
+if [ "$1" ] && [ "$1" == "www" ]; then
+    if [ $HAS_PROXY == 1 ]; then
+      echo "http://${PROJECT_NAME}.localhost:${PROXY_PORT}"
+    else
+      echo "http://$(service_ip ${WEBSERVER_NAME})"
+    fi
+    exit 0
+fi
 if [ "$1" ] && [ "$1" == "status" ]; then
   if [[ $(docker ps -f name="${WEBSERVER_NAME}" | grep -w "${WEBSERVER_NAME}") ]]; then
      list_services
