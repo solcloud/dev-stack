@@ -40,6 +40,14 @@ BASE_IMAGE=php:8.1.3-apache
 
 If `BASE_IMAGE` is not enough and you want absolute image control you can provide `COMPOSE_CONTEXT` variable with path to docker-compose build context folder.
 
+Default [COMPOSE_CONTEXT](src/docker/docker-compose.yml) allows expanding `BASE_IMAGE` for current project using `EXTRA_RUN_CMD_${1-7}` variables. For example installing _ffmpeg_ for current project.
+
+```bash
+PROJECT_NAME=my_project
+EXTRA_RUN_CMD_1="apt-get update && apt-get install -y ffmpeg"
+EXTRA_RUN_CMD_2="echo dev-stack is awesome"
+```
+
 # Commands
 
 - usage: `dev`
