@@ -34,14 +34,20 @@ if ! [ -d "$DEV_STACK_BASE" ]; then
 fi
 
 if [ "$1" ] && [ "$1" == "init" ]; then
+  if [ -w "${PROJECT_BASE}/.ci/" ]; then
+    CONFIG_FILE=${PROJECT_BASE}/.ci/.dev-config
+  fi
   cp -i ${DEV_STACK_BASE}/src/.dev-config.example $CONFIG_FILE
   echo "Example config file created $CONFIG_FILE"
   exit 0
 fi
 
 if [[ ! -f $CONFIG_FILE ]]; then
-  echo "No config file found, run init command or create it manually"
-  exit 1
+  CONFIG_FILE=${PROJECT_BASE}/.ci/.dev-config
+  if [[ ! -f $CONFIG_FILE ]]; then
+    echo "No config file found, run init command or create it manually"
+    exit 1
+  fi
 fi
 
 PROJECT_NAME=$(cat $CONFIG_FILE | grep "PROJECT_NAME=" | grep -o "=.*" | cut -d'=' -f 2)

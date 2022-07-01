@@ -4,7 +4,7 @@ set -e
 
 PROJECT_BASE="$(pwd)"
 CONFIG_FILE=${PROJECT_BASE}/.dev-config
-STORAGE_DIRVER=${STORAGE_DIRVER:-'virtiofs'} # virtiofs | sshfs | 9p | nfs
+STORAGE_DRIVER=${STORAGE_DRIVER:-'virtiofs'} # virtiofs | sshfs | 9p | nfs
 CODE_SRC_ROOT_DIR=${CODE_SRC_ROOT_DIR:-'/home/code/src/'}
 
 get_script_dir() {
@@ -28,6 +28,9 @@ if ! [ -d "$DEV_STACK_BASE" ]; then
 fi
 
 if [ "$1" ] && [ "$1" == "init" ]; then
+  if [ -w "${PROJECT_BASE}/.ci/" ]; then
+    CONFIG_FILE=${PROJECT_BASE}/.ci/.dev-config
+  fi
   cp -i ${DEV_STACK_BASE}/src/.dev-config.example $CONFIG_FILE
   echo "Example config file created $CONFIG_FILE"
   exit 0
@@ -69,7 +72,7 @@ if [ "$1" ] && [ "$1" == "machine" ]; then
         exit 0
       fi
       QEMU_OPTS="-nographic"
-      if [ $STORAGE_DIRVER == "virtiofs" ]; then
+      if [ $STORAGE_DRIVER == "virtiofs" ]; then
         virtiofsd --socket-path /tmp/dev-stack-qemu-virtiofs --shared-dir $CODE_SRC_ROOT_DIR --sandbox none &
         QEMU_OPTS="$QEMU_OPTS -chardev socket,id=char0,path=/tmp/dev-stack-qemu-virtiofs -device vhost-user-fs-pci,queue-size=1024,chardev=char0,tag=tag -object memory-backend-file,id=mem,size=${QEMU_RAM:-4G},mem-path=/dev/shm,share=on -numa node,memdev=mem"
       fi
@@ -118,12 +121,15 @@ elif [ "$1" ] && [ "$1" == "x11" ]; then
 fi
 
 if [[ ! -f $CONFIG_FILE ]]; then
-  echo "No config file found, run init command or create it manually"
-  exit 1
+  CONFIG_FILE=${PROJECT_BASE}/.ci/.dev-config
+  if [[ ! -f $CONFIG_FILE ]]; then
+    echo "No config file found, run init command or create it manually"
+    exit 1
+  fi
 fi
 
 {
-  # Init deamons
+  # Init daemons
 
   # Proxy docker jwilder forward from host
   singleton_bg "ssh -q -N -L 127.0.0.1:$LOCAL_PROXY_PORT:127.0.0.1:$REMOTE_PROXY_PORT -p $REMOTE_PORT $REMOTE_USER@$REMOTE_IP"
@@ -136,7 +142,7 @@ fi
 # Params
 if [ "$1" ] && [ "$1" == "up" ]; then
     # Setup directory and shares
-    if [ $STORAGE_DIRVER == "sshfs" ]; then
+    if [ $STORAGE_DRIVER == "sshfs" ]; then
       HOST_USER=${HOST_USER:-'code'}
       HOST_IP=${HOST_IP:-'10.0.2.2'}
       HOST_PORT=${HOST_PORT:-22}
@@ -146,7 +152,7 @@ if [ "$1" ] && [ "$1" == "up" ]; then
     remote_dev_stack "$*"
 elif [ "$1" ] && [ "$1" == "down" ]; then
     remote_dev_stack "$*"
-    if [ $STORAGE_DIRVER == "sshfs" ]; then
+    if [ $STORAGE_DRIVER == "sshfs" ]; then
       remote "cd /tmp && fusermount3 -u $PROJECT_BASE"
     fi
 elif [ "$1" ] && [ "$1" == "composerssh" ]; then
