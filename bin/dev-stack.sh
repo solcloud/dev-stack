@@ -342,6 +342,10 @@ if [ "$1" ] && [ "$1" == "composerssh" ]; then
   [ "$SSH_AGENT_PID" ] && eval $(ssh-agent -k)
   exit 0
 fi
+if [ "$1" ] && [ "$1" == "check" ]; then
+  $DOCKER_EXEC "${WEBSERVER_NAME}" sh -c "umask 007 ; php /utils/composer2.phar check ${ARGS[*]}"
+  exit 0
+fi
 if [ "$1" ] && [ "$1" == "stan" ]; then
   $DOCKER_EXEC "${WEBSERVER_NAME}" sh -c "umask 007 ; php vendor/bin/phpstan ${ARGS[*]}"
   exit 0
