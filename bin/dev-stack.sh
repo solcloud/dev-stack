@@ -343,15 +343,11 @@ if [ "$1" ] && [ "$1" == "composerssh" ]; then
   exit 0
 fi
 if [ "$1" ] && [ "$1" == "stan" ]; then
-  $DOCKER_EXEC "${WEBSERVER_NAME}" sh -c "umask 007 ; php /utils/phpstan.phar --memory-limit=256M ${ARGS[*]}"
-  exit 0
-fi
-if [ "$1" ] && [ "$1" == "md" ]; then
-  $DOCKER_EXEC "${WEBSERVER_NAME}" sh -c "umask 007 ; php /utils/phpmd.phar ${ARGS[*]}"
+  $DOCKER_EXEC "${WEBSERVER_NAME}" sh -c "umask 007 ; php vendor/bin/phpstan ${ARGS[*]}"
   exit 0
 fi
 if [ "$1" ] && [ "$1" == "unit" ]; then
-  $DOCKER_EXEC "${WEBSERVER_NAME}" sh -c "umask 007 ; php /utils/phpunit.phar ${ARGS[*]}"
+  $DOCKER_EXEC "${WEBSERVER_NAME}" sh -c "umask 007 ; php vendor/bin/phpunit ${ARGS[*]}"
   exit 0
 fi
 if [ "$1" ] && [ "$1" == "node" ]; then
@@ -426,10 +422,6 @@ $0 COMMAND [options]
 
   logs - docker logs
 
-  md - run PHP Mess Detector, static analysis tool for php
-       md [sources] [ansi|html|text|xml|json]  ruleset       PHP Mess Detector
-       md src/,tests/ ansi cleancode,codesize,controversial,design,naming,unusedcode
-
   node - run NODE_VERSION node command
          npm
          npx
@@ -445,7 +437,7 @@ $0 COMMAND [options]
 
   root [CONTAINER_NAME = webserver] [COMMAND = sh] - exec into container (by default webserver) as user 0:0 spawning COMMAND (by default sh)
 
-  stan - run PHPStan, static analysis tool for php
+  stan - run PHPStan (vendor/bin/phpstan), static analysis tool for php
          analyse --level max
 
   start - run docker compose start
@@ -454,7 +446,7 @@ $0 COMMAND [options]
 
   stop - run docker compose stop
 
-  unit - run PHPUnit, testing framework for php
+  unit - run PHPUnit (vendor/bin/phpunit), testing framework for php
 
   up - start project container(s)
 
