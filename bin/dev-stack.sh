@@ -101,7 +101,10 @@ volume_path() {
 
 setup_services() {
   if [[ $HAS_PROXY == 1 ]]; then
-    start_service "n_jw_proxy_${NETWORK_NAME}" "-p ${REMOTE_PROXY_PORT}:80 -v /var/run/docker.sock:/tmp/docker.sock:ro -v ${DEV_STACK_BASE}/src/docker/proxy.conf:/etc/nginx/conf.d/my_proxy.conf:ro jwilder/nginx-proxy@sha256:53004448ff1b987e2ae01841365b7f121c75c7928a3c4621cde69ac498badcff"
+    if [[ "${NETWORK_NAME}" != $(docker inspect --format='{{.HostConfig.NetworkMode}}' "proxy_jw_proxy") ]]; then
+      docker stop "proxy_jw_proxy" &> /dev/null && docker rm "proxy_jw_proxy" || true
+    fi
+    start_service "proxy_jw_proxy" "-p ${REMOTE_PROXY_PORT}:80 -v /var/run/docker.sock:/tmp/docker.sock:ro -v ${DEV_STACK_BASE}/src/docker/proxy.conf:/etc/nginx/conf.d/my_proxy.conf:ro jwilder/nginx-proxy@sha256:53004448ff1b987e2ae01841365b7f121c75c7928a3c4621cde69ac498badcff"
   fi
 
   if [[ $HAS_DB == 1 ]]; then
