@@ -335,6 +335,7 @@ if [ "$1" ] && [ "$1" == "composerssh" ]; then
     rm -f $SSH_AUTH_SOCK_PATH
     eval $(ssh-agent -a $SSH_AUTH_SOCK_PATH)
     ssh-add -t 300 $private_key
+    SSH_AUTH_SOCK_PATH=/share/dev-stack-agent
   fi
   auth_json=${AUTH_JSON:-~/.composer/auth.json}
   test -r $auth_json && cp $auth_json /tmp/dev-stack-auth.json
